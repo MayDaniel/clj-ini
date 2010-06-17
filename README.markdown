@@ -4,7 +4,7 @@ Another small, superficial read/write key/val configuration utility.
 
 ## Usage
 
-* `(write-map)`                  - Writes a hash-map to a file in a readable format.
+* `(write-map)`                  - Writes key/values to a file in a readable format.
 * `(read-map)`                   - Returns the key/values to a Clojure data structure.
 
 ### Example
