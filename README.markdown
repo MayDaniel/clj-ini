@@ -22,7 +22,7 @@ Another small, superficial read/write key/val configuration utility.
 
 ### Results
 
-File: [foo.bar](http://github.com/maydaniel/blob/master/foo.bar)
+File: [foo.bar](http://github.com/MayDaniel/Clj-Ini/blob/master/foo.bar)
 
 ## Installation
 
