@@ -4,10 +4,6 @@
         [clojure.contrib.seq-utils :only [includes? partition-all]])
   (:import [java.io File]))
 
-;; Ignores lines that: have the prefix '#' (comment lines), contain only whitespace, are empty, do not include '='
-;; Currently does not allow a key/value to be multiline.
-;; Comment metadata can be a collection of strings or a string, depending on multiline or singleline
-
 (defn read-map [file]
   (when-not (.exists (File. file)) (.createNewFile (File. file)))
   (if-not (empty? (read-lines file))
