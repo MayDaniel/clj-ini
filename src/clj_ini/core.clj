@@ -6,7 +6,7 @@
 
 (defn create-file
   [name]
-  (when-not (.exists (File. name) (.createNewFile (File. name)))))
+  (when-not (.exists (File. name)) (.createNewFile (File. name))))
 
 (defn read-map
   "Constructs a Clojure hash-map from write-map dump. Returns an
