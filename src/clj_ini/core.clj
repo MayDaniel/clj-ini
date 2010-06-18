@@ -21,13 +21,13 @@
 empty map and creates the file if the file did not exist."
   [file]
   (create-file file)
-  (if-not (empty? (read-lines file))
+  (if (empty? (read-lines file)) {}
     (let [lines (remove #(or
                           (every? (partial = \space) %)
                           (some (partial = (first %)) [\# nil])
                           (not (includes? % \=)))
                         (read-lines file))
-          file-str (if-not (empty? lines) 
+          file-str (if-not (empty? lines)
                      (->> lines
                           (interpose \space)
                           (apply str)
@@ -35,15 +35,16 @@ empty map and creates the file if the file did not exist."
                           (apply str)
                           (replace-str "  " " ")
                           (split- #" ")
-                          (partition-all 2)) {})]
-      (cond (-> file-str last count even?)
-            (reduce merge (map #(hash-map (-> % first read-string keyword)
-                                          (-> % second read-string)) file-str))
-            (-> file-str last count odd?)
-            (throw (Exception.
-                    "Exception in parsing. An uneven number of key/vals were found.
+                          (partition-all 2)) {})
+          read (cond (-> file-str last count even?)
+                     (reduce merge (map #(hash-map (-> % first read-string keyword)
+                                                   (-> % second read-string)) file-str))
+                     (-> file-str last count odd?)
+                     (throw (Exception.
+                             "Exception in parsing. An uneven number of key/vals were found.
                        Remember a key/val should be one line."))
-            (-> file-str empty?) {})) {}))
+                     (-> file-str empty?) {})]
+      (if-not (nil? read) read {}))))
 
 (defn write-map
   "Spits the map in a readable format. Takes optional comments metadata."
