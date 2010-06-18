@@ -24,7 +24,8 @@
               (reduce merge (map #(hash-map (-> % first read-string keyword)
                                             (-> % second read-string)) file-str))
               (-> file-str last count odd?)
-              (throw (Exception. "Exception in parsing. An uneven number of key/vals in the file."))
+              (throw (Exception.
+                      "Exception in parsing. An uneven number of key/vals were found. Remember a key/val may only be one line."))
               (-> file-str empty?) {}))) {}))
 
 (defn write-map [file map]
