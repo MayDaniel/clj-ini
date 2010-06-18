@@ -8,10 +8,13 @@
   [name]
   (when-not (.exists (File. name)) (.createNewFile (File. name))) nil)
 
-(defn replace-re
-  "Replaces all matches of re with replacement in s."
-  [re replacement #^String s]
-  (.replaceAll (re-matcher re s) replacement))
+(defn replace-str 
+  [a b s]
+  (.replace s a b))
+
+(defn split-
+  [re s]
+  (split s re))
 
 (defn read-map
   "Constructs a Clojure hash-map from write-map dump. Returns an
@@ -19,29 +22,28 @@ empty map and creates the file if the file did not exist."
   [file]
   (create-file file)
   (if-not (empty? (read-lines file))
-    (do
-      (let [lines (remove #(or
-                            (every? (partial = \space) %)
-                            (some (partial = (first %)) [\# nil])
-                            (not (includes? % \=))) (read-lines file))
-            file-str
-            (if-not (empty? lines) 
-              (->> lines
-                   (interpose \space)
-                   (apply str)
-                   (remove #(= \= %))
-                   (apply str)
-                   (replace-re #"  " " ")
-                   (split #" ")
-                   (partition-all 2)) {})]
-        (cond (-> file-str last count even?)
-              (reduce merge (map #(hash-map (-> % first read-string keyword)
-                                            (-> % second read-string)) file-str))
-              (-> file-str last count odd?)
-              (throw (Exception.
-                      "Exception in parsing. An uneven number of key/vals were found.
+    (let [lines (remove #(or
+                          (every? (partial = \space) %)
+                          (some (partial = (first %)) [\# nil])
+                          (not (includes? % \=)))
+                        (read-lines file))
+          file-str (if-not (empty? lines) 
+                     (->> lines
+                          (interpose \space)
+                          (apply str)
+                          (remove #(= \= %))
+                          (apply str)
+                          (replace-str "  " " ")
+                          (split- #" ")
+                          (partition-all 2)) {})]
+      (cond (-> file-str last count even?)
+            (reduce merge (map #(hash-map (-> % first read-string keyword)
+                                          (-> % second read-string)) file-str))
+            (-> file-str last count odd?)
+            (throw (Exception.
+                    "Exception in parsing. An uneven number of key/vals were found.
                        Remember a key/val should be one line."))
-              (-> file-str empty?) {}))) {}))
+            (-> file-str empty?) {})) {}))
 
 (defn write-map
   "Spits the map in a readable format. Takes optional comments metadata."
