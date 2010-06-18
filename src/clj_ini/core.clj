@@ -6,7 +6,12 @@
 
 (defn create-file
   [name]
-  (when-not (.exists (File. name)) (.createNewFile (File. name))))
+  (when-not (.exists (File. name)) (.createNewFile (File. name))) nil)
+
+(defn replace-re
+  "Replaces all matches of re with replacement in s."
+  [re replacement #^String s]
+  (.replaceAll (re-matcher re s) replacement))
 
 (defn read-map
   "Constructs a Clojure hash-map from write-map dump. Returns an
@@ -18,15 +23,17 @@ empty map and creates the file if the file did not exist."
       (let [lines (remove #(or
                             (every? (partial = \space) %)
                             (some (partial = (first %)) [\# nil])
-                            (not (includes? % \=))) (read-lines file)) file-str
-            (if-not (empty? lines) (->> lines
-                                        (interpose \space)
-                                        (apply str)
-                                        (remove #(= \= %))
-                                        (apply str)
-                                        (.replaceAll #"  " " ")
-                                        (split #" ")
-                                        (partition-all 2)) {})]
+                            (not (includes? % \=))) (read-lines file))
+            file-str
+            (if-not (empty? lines) 
+              (->> lines
+                   (interpose \space)
+                   (apply str)
+                   (remove #(= \= %))
+                   (apply str)
+                   (replace-re #"  " " ")
+                   (split #" ")
+                   (partition-all 2)) {})]
         (cond (-> file-str last count even?)
               (reduce merge (map #(hash-map (-> % first read-string keyword)
                                             (-> % second read-string)) file-str))
