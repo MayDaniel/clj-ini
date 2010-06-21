@@ -28,9 +28,9 @@ if it does not exist."
       (spit file "")
       (if-not (sequential? comments)
         (spit file (str "#" \space comments \newline \newline))
-          (doseq [x comments]
-            (append-spit file (str "#" \space x \newline)))
-          (append-spit file \newline)))
+        (doseq [x comments]
+          (append-spit file (str "#" \space x \newline)))
+        (append-spit file \newline)))
     (let [comments (filter #(= (first %) \#) (read-lines file))]
       (when-not (empty? comments)
         (spit file "")
