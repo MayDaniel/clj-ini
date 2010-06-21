@@ -1,50 +1,24 @@
 (ns clj-ini.core
-  (:use [clojure.contrib.str-utils2 :only [split]]
+  (:use [clojure.contrib.str-utils :only [re-split]]
         [clojure.contrib.duck-streams :only [read-lines append-spit spit]]
-        [clojure.contrib.seq-utils :only [includes? partition-all]])
+        [clojure.contrib.seq-utils :only [includes?]])
   (:import [java.io File]))
 
 (defn create-file
   [name]
-  (when-not (.exists (File. name)) (.createNewFile (File. name))) nil)
+  (when-not (.exists (File. name)) (.createNewFile (File. name))) name)
 
-(defn replace-str 
-  [a b s]
-  (.replace s a b))
-
-(defn split-
-  [re s]
-  (split s re))
-
-(defn read-map
-  "Constructs a Clojure hash-map from write-map dump. Returns an
-empty map and creates the file if the file did not exist."
+(defn read-map 
+  "Constructs a Clojure hash-map from write-map dump. Creates the file
+if it does not exist."
   [file]
-  (create-file file)
-  (if (empty? (read-lines file)) {}
-    (let [lines (remove #(or
-                          (every? (partial = \space) %)
-                          (some (partial = (first %)) [\# nil])
-                          (not (includes? % \=)))
-                        (read-lines file))
-          file-str (if-not (empty? lines)
-                     (->> lines
-                          (interpose \space)
-                          (apply str)
-                          (remove #(= \= %))
-                          (apply str)
-                          (replace-str "  " " ")
-                          (split- #" ")
-                          (partition-all 2)) {})
-          read (cond (-> file-str last count even?)
-                     (reduce merge (map #(hash-map (-> % first read-string keyword)
-                                                   (-> % second read-string)) file-str))
-                     (-> file-str last count odd?)
-                     (throw (Exception.
-                             "Exception in parsing. An uneven number of key/vals were found.
-                       Remember a key/val should be one line."))
-                     (-> file-str empty?) {})]
-      (if-not (nil? read) read {}))))
+  (let [contents (read-lines (create-file file))
+        file-map (remove #(not (includes? % \=)) contents)]
+    (if (empty? file-map) {}
+        (loop [lines file-map acc {}]
+          (if (empty? lines) acc
+              (let [x (re-split #" = " (first lines) 2)]
+                (recur (rest lines) (assoc acc (read-string (first x)) (read-string (second x))))))))))
 
 (defn write-map
   "Spits the map in a readable format. Takes optional comments metadata."
@@ -54,10 +28,9 @@ empty map and creates the file if the file did not exist."
       (spit file "")
       (if-not (sequential? comments)
         (spit file (str "#" \space comments \newline \newline))
-        (do
           (doseq [x comments]
             (append-spit file (str "#" \space x \newline)))
-          (append-spit file \newline))))
+          (append-spit file \newline)))
     (let [comments (filter #(= (first %) \#) (read-lines file))]
       (when-not (empty? comments)
         (spit file "")
