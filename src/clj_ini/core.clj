@@ -1,5 +1,6 @@
 (ns clj-ini.core
   (:use [clojure.contrib.str-utils :only [re-split]]
+        [clojure.contrib.str-utils2 :only [map-str]]
         [clojure.contrib.duck-streams :only [read-lines append-spit spit]]
         [clojure.contrib.seq-utils :only [includes?]])
   (:import [java.io File]))
@@ -18,7 +19,7 @@ if it does not exist."
   [file]
   (let [contents (read-lines (create-file file))
         file-map (remove #(not (includes? % \=)) contents)
-        meta-comments (take-while #(= (first %) \#) contents)]
+        meta-comments (map #(apply str (drop 2 %)) (take-while #(= (first %) \#) contents))]
     (if (empty? file-map) {}
         (loop [lines file-map acc {}]
           (if (empty? lines) (with-meta acc {:comments meta-comments})
