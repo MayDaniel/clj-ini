@@ -10,7 +10,7 @@ Another small, superficial read/write key/val configuration utility.
 ### Example
 
     (write-map "foo.bar" (with-meta 
-                           {:a 1 :b 2 :c 3}
+                           {:a 1 :b [2 3] :c {:d 4, :e 5}}
                            {:comments ["Comment, line 1" "Comment, line 2"]}))
 
 ### Results
