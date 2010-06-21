@@ -7,8 +7,6 @@ Another small, superficial read/write key/val configuration utility.
 * `(write-map)`                  - Writes key/values to a file in a readable format.
 * `(read-map)`                   - Returns the key/values to a Clojure data structure.
 
-For now, values may only be single-word-strings, characters, booleans, numbers, nil. I'll improve this.
-
 ### Example
 
     (write-map "foo.bar" (with-meta 
