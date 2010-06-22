@@ -23,7 +23,7 @@
 
 (defn read-map
   "Constructs a Clojure hash-map from write-map dump. Creates the file
-if it does not exist."
+if it does not exist. Any comment metadata will be included."
   [file]
   (let [contents (read-lines (create-file file))
         data-lines (remove #(not (includes? % \=)) contents)
