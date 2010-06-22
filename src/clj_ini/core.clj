@@ -1,6 +1,5 @@
 (ns clj-ini.core
   (:use [clojure.contrib.str-utils :only [re-split]]
-        [clojure.contrib.str-utils2 :only [map-str]]
         [clojure.contrib.duck-streams :only [read-lines append-spit spit]]
         [clojure.contrib.seq-utils :only [includes?]])
   (:import [java.io File]))
@@ -13,18 +12,28 @@
   [name]
   (spit (create-file name) ""))
 
+(defn get-comments
+  [source]
+  (letfn [(extract-comments [arg] (take-while #(= (first %) \#) arg))]
+    (with-meta {}
+      (cond (not (or (every? string? source) (string? source)))
+            (throw (Exception. "Source should be either a sequence of strings, or a file-name."))
+            (string? source) {:comments (extract-comments (read-lines (create-file source)))}
+            :else {:comments (extract-comments source)}))))
+
 (defn read-map
   "Constructs a Clojure hash-map from write-map dump. Creates the file
 if it does not exist."
   [file]
   (let [contents (read-lines (create-file file))
-        file-map (remove #(not (includes? % \=)) contents)
-        meta-comments (map #(apply str (drop 2 %)) (take-while #(= (first %) \#) contents))]
-    (if (empty? file-map) {}
-        (loop [lines file-map acc {}]
-          (if (empty? lines) (with-meta acc {:comments meta-comments})
-              (let [x (re-split #" = " (first lines) 2)]
-                (recur (rest lines) (assoc acc (read-string (first x)) (read-string (second x))))))))))
+        data-lines (remove #(not (includes? % \=)) contents)
+        meta-comments (meta (get-comments contents))]
+    (if (empty? data-lines) {}
+        (loop [lines data-lines acc {}]
+          (if (empty? lines) (with-meta acc meta-comments)
+              (let [[x & more] lines
+                    [key val] (re-split #" = " x 2)]
+                (recur more (assoc acc (read-string key) (read-string val)))))))))
 
 (defn write-map
   "Writes a (merge (read-map file) map) to a file, and takes optional comments metadata
