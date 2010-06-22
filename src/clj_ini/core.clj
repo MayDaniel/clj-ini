@@ -36,8 +36,7 @@ if it does not exist."
                 (recur more (assoc acc (read-string key) (read-string val)))))))))
 
 (defn write-map
-  "Writes a (merge (read-map file) map) to a file, and takes optional comments metadata
-to include in the dump."
+  "Writes a (merge (read-map file) map) to file, and takes optional comments metadata to include in the dump."
   [file map]
   (let [contents (read-map (create-file file))]
     (clean-file file)
