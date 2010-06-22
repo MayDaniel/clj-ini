@@ -14,7 +14,7 @@
 
 (defn get-comments
   [source]
-  (letfn [(extract-comments [arg] (take-while #(= (first %) \#) arg))]
+  (letfn [(extract-comments [src] (take-while #(= (first %) \#) src))]
     (with-meta {}
       (cond (not (or (every? string? source) (string? source)))
             (throw (Exception. "Source should be either a sequence of strings, or a file-name."))
