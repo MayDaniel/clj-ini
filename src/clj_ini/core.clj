@@ -1,6 +1,6 @@
 (ns clj-ini.core
   (:use [clojure.contrib.str-utils :only [re-split]]
-        [clojure.contrib.duck-streams :only [read-lines append-spit spit write-lines]]
+        [clojure.contrib.duck-streams :only [read-lines append-spit spit]]
         [clojure.contrib.seq-utils :only [includes?]])
   (:import [java.io File]))
 
@@ -44,8 +44,8 @@ metadata to include in the dump."
       (do (doseq [line meta-comments]
             (append-spit file (str "# " line \newline)))
           (append-spit file \newline)))
-    (loop [kvs (merge contents map)]
-      (when-not (empty? kvs)
-        (let [kv (first kvs)]
+    (loop [out-map (merge contents map)]
+      (when-not (empty? out-map)
+        (let [kv (first out-map)]
           (append-spit file (str (key kv) " = " (val kv) \newline)))
         (recur (rest kvs))))))
