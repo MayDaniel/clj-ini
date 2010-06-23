@@ -1,6 +1,6 @@
 (ns clj-ini.core
   (:use [clojure.contrib.str-utils :only [re-split]]
-        [clojure.contrib.duck-streams :only [read-lines append-spit spit]]
+        [clojure.contrib.duck-streams :only [read-lines append-spit spit write-lines]]
         [clojure.contrib.seq-utils :only [includes?]])
   (:import [java.io File]))
 
@@ -35,14 +35,17 @@ if it does not exist. Any comment metadata will be included."
                 (recur more (assoc acc (read-string key) (read-string val)))))))))
 
 (defn write-map
-  "Writes a (merge (read-map file) map) to file, and takes optional comments metadata to include in the dump."
+  "Writes a (merge (read-map file) map) to file, and takes optional comments
+metadata to include in the dump."
   [file map]
   (let [contents (read-map (create-file file))]
     (clean-file file)
     (if-let [meta-comments (:comments (meta map))]
-      (do
-        (doseq [line meta-comments]
-          (append-spit file (str "# " line \newline)))
-        (append-spit file \newline)))
-    (doseq [kv (merge contents map)]
-      (append-spit file (str (key kv) " = " (val kv) \newline)))))
+      (do (doseq [line meta-comments]
+            (append-spit file (str "# " line \newline)))
+          (append-spit file \newline)))
+    (loop [kvs (merge contents map)]
+      (when-not (empty? kvs)
+        (let [kv (first kvs)]
+          (append-spit file (str (key kv) " = " (val kv) \newline)))
+        (recur (rest kvs))))))
