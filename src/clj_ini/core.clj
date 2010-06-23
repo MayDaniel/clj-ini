@@ -17,7 +17,7 @@
   (letfn [(extract-comments [src] (take-while #(= (first %) \#) src))]
     (with-meta {}
       (cond (string? source) {:comments (extract-comments (read-lines (create-file source)))}
-            (sequential? source) {:comments (extract-comments source)}
+            (and (sequential? source) (every? string? source)) {:comments (extract-comments source)}
             :else (throw (Exception. "Source should be either a sequence of strings, or a file-name."))))))
 
 (defn read-map
