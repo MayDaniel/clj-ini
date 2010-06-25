@@ -2,6 +2,7 @@
   (:use [clojure.contrib.str-utils :only [re-split]]
         [clojure.contrib.duck-streams :only [read-lines append-spit spit]]
         [clojure.contrib.seq-utils :only [includes?]])
+        [clojure.contrib.core :only [seqable?]
   (:import [java.io File]))
 
 (defn create-file
@@ -17,7 +18,7 @@
   (letfn [(extract-comments [src] (take-while #(= (first %) \#) src))]
     (with-meta {}
       (cond (string? source) {:comments (extract-comments (read-lines (create-file source)))}
-            (and (sequential? source) (every? string? source)) {:comments (extract-comments source)}
+            (and (seqable? source) (every? string? source)) {:comments (extract-comments source)}
             :else (throw (Exception. "Source should be either a sequence of strings, or a file-name."))))))
 
 (defn read-map
