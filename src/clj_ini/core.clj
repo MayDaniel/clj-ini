@@ -1,8 +1,8 @@
 (ns clj-ini.core
   (:use [clojure.contrib.str-utils :only [re-split]]
         [clojure.contrib.duck-streams :only [read-lines append-spit spit]]
-        [clojure.contrib.seq-utils :only [includes?]])
-        [clojure.contrib.core :only [seqable?]]
+        [clojure.contrib.seq-utils :only [includes?]]
+        [clojure.contrib.core :only [seqable?]])
   (:import [java.io File]))
 
 (defn create-file
