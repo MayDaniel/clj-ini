@@ -41,10 +41,10 @@ metadata to include in the dump."
   [file map]
   (let [contents (read-map (create-file file))]
     (clean-file file)
-    (if-let [meta-comments (:comments (meta map))]
-      (do (doseq [line meta-comments]
-            (append-spit file (str "# " line \newline)))
-          (append-spit file \newline)))
+    (when-let [meta-comments (:comments (meta map))]
+      (doseq [line meta-comments]
+        (append-spit file (str "# " line \newline)))
+      (append-spit file \newline))
     (loop [out-map (merge contents map)]
       (when-not (empty? out-map)
         (let [kv (first out-map)]
