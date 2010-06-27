@@ -12,8 +12,8 @@
 (defn clean-file
   [name]
   (when (and (.exists (File. name)) (.canWrite (File. name)))
-    (.delete (File. name))
-    (.createNewFile (File. name))) nil)
+    (.delete (File. name)))
+  (.createNewFile (File. name)) nil)
 
 (defn get-comments
   [source]
