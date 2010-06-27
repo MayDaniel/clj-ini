@@ -5,7 +5,7 @@
         [clojure.contrib.core :only [seqable?]])
   (:import [java.io File]))
 
-(defn create-file
+(defn check-create
   [name]
   (when-not (.exists (File. name)) (.createNewFile (File. name))) name)
 
@@ -27,7 +27,7 @@
   "Constructs a Clojure hash-map from write-map dump. Creates the file
 if it does not exist. Any comment metadata will be included."
   [file]
-  (create-file file)
+  (check-create file)
   (let [contents (read-lines file)
         data-lines (remove #(not (includes? % \=)) contents)
         meta-comments (meta (get-comments contents))]
@@ -42,7 +42,8 @@ if it does not exist. Any comment metadata will be included."
   "Writes a (merge (read-map file) map) to file, and takes optional comments
 metadata to include in the dump."
   [file map]
-  (let [contents (read-map (create-file file))]
+  (check-create file)
+  (let [contents (read-map file)]
     (clean-file file)
     (when-let [meta-comments (:comments (meta map))]
       (doseq [line meta-comments]
