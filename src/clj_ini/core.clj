@@ -9,18 +9,17 @@
   [name]
   (when-not (.exists (File. name)) (.createNewFile (File. name))) name)
 
-(defn clean-file [name]
-  (let [f (File. name)]
-    (when (and (.exists f) (.canWrite f))
-      (.delete f))
-      (.createNewFile f)) nil)
+(defn clean-file
+  [name]
+  (when (and (.exists (File. name)) (.canWrite (File. name)))
+    (.delete (File. name))
+    (.createNewFile (File. name))) nil)
 
 (defn get-comments
   [source]
-  (check-create source)
   (letfn [(extract-comments [src] (take-while #(= (first %) \#) src))]
     (with-meta {}
-      (cond (string? source) {:comments (extract-comments (read-lines source))}
+      (cond (string? source) {:comments (extract-comments (read-lines (check-create source)))}
             (and (seqable? source) (every? string? source)) {:comments (extract-comments source)}
             :else (throw (Exception. "Source should be either a sequence of strings, or a file-name."))))))
 
@@ -28,8 +27,7 @@
   "Constructs a Clojure hash-map from write-map dump. Creates the file
 if it does not exist. Any comment metadata will be included."
   [file]
-  (check-create file)
-  (let [contents (read-lines file)
+  (let [contents (read-lines (check-create file))
         data-lines (remove #(not (includes? % \=)) contents)
         meta-comments (meta (get-comments contents))]
     (if (empty? data-lines) {}
@@ -43,8 +41,7 @@ if it does not exist. Any comment metadata will be included."
   "Writes a (merge (read-map file) map) to file, and takes optional comments
 metadata to include in the dump."
   [file map]
-  (check-create file)
-  (let [contents (read-map file)]
+  (let [contents (read-map (check-create file))]
     (clean-file file)
     (when-let [meta-comments (:comments (meta map))]
       (doseq [line meta-comments]
