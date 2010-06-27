@@ -9,9 +9,11 @@
   [name]
   (when-not (.exists (File. name)) (.createNewFile (File. name))) name)
 
-(defn clean-file
-  [name]
-  (spit (create-file name) ""))
+(defn clean-file [name]
+  (let [f (File. name)]
+    (when (and (.exists f) (.canWrite f))
+      (.delete f)
+      (.createNewFile f))) nil)
 
 (defn get-comments
   [source]
