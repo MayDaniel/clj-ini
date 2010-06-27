@@ -27,7 +27,8 @@
   "Constructs a Clojure hash-map from write-map dump. Creates the file
 if it does not exist. Any comment metadata will be included."
   [file]
-  (let [contents (read-lines (create-file file))
+  (create-file file)
+  (let [contents (read-lines file)
         data-lines (remove #(not (includes? % \=)) contents)
         meta-comments (meta (get-comments contents))]
     (if (empty? data-lines) {}
