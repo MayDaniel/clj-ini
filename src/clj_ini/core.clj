@@ -17,9 +17,10 @@
 
 (defn get-comments
   [source]
+  (check-create source)
   (letfn [(extract-comments [src] (take-while #(= (first %) \#) src))]
     (with-meta {}
-      (cond (string? source) {:comments (extract-comments (read-lines (create-file source)))}
+      (cond (string? source) {:comments (extract-comments (read-lines source))}
             (and (seqable? source) (every? string? source)) {:comments (extract-comments source)}
             :else (throw (Exception. "Source should be either a sequence of strings, or a file-name."))))))
 

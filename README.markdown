@@ -20,6 +20,7 @@ File: [foo.bar](http://github.com/MayDaniel/Clj-Ini/blob/master/foo.bar)
 ## Installation
 
 - Leiningen.
+- Add `[clj-ini "0.1.0"]` to your dependencies in project.clj.
 
 ## License
 
