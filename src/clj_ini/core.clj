@@ -46,8 +46,9 @@ metadata to include in the dump."
       (doseq [line meta-comments]
         (append-spit file (str "# " line \newline)))
       (append-spit file \newline))
-    (loop [out-map (merge contents map)]
-      (when out-map
-        (let [kv (first out-map)]
-          (append-spit file (str (key kv) " = " (val kv) \newline)))
-        (recur (next out-map))))))
+    (when (some seq [contents map])
+      (loop [out-map (merge contents map)]
+        (when out-map
+          (let [kv (first out-map)]
+            (append-spit file (str (key kv) " = " (val kv) \newline)))
+          (recur (next out-map))))))
