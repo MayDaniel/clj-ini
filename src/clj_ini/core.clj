@@ -51,4 +51,4 @@ metadata to include in the dump."
         (when out-map
           (let [kv (first out-map)]
             (append-spit file (str (key kv) " = " (val kv) \newline)))
-          (recur (next out-map))))))
+          (recur (next out-map)))))))
