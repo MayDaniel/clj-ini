@@ -43,7 +43,7 @@ metadata to include in the dump."
   (let [contents (read-map (check-create file))]
     (clean-file file)
     (when-let [meta-comments (:comments (meta map))]
-      (doseq [line meta-comments]
+      (doseq [line (map str meta-comments)]
         (append-spit file (str "# " line \newline)))
       (append-spit file \newline))
     (when (some seq [contents map])
