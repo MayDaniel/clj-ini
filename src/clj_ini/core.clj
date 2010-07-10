@@ -18,9 +18,9 @@
   [source]
   (letfn [(extract-comments [src] (take-while #(= (first %) \#) src))]
     (with-meta {}
-      (cond (string? source) {:comments (extract-comments (read-lines (check-create source)))}
-            (and (coll? source) (every? string? source)) {:comments (extract-comments source)}
-            :else (throw (Exception. "Source should be either a sequence of strings, or a file-name."))))))
+      (if (string? source)
+        {:comments (extract-comments (read-lines (check-create source)))}
+        {:comments (extract-comments (map str source))}))))
 
 (defn read-map
   "Constructs a Clojure hash-map from write-map dump. Creates the file
