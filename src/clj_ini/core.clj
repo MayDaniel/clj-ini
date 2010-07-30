@@ -1,6 +1,6 @@
 (ns clj-ini.core
   (:use [clojure.contrib.str-utils :only [re-split]]
-        [clojure.contrib.duck-streams :only [read-lines append-spit spit]]
+        [clojure.contrib.duck-streams :only [read-lines append-spit]]
         [clojure.contrib.seq-utils :only [includes?]])
   (:import [java.io File]))
 
