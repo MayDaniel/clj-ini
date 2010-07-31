@@ -29,9 +29,9 @@ if it does not exist. Any comment metadata will be included."
   (let [contents (read-lines (check-create file))
         data-lines (remove #(not (includes? % \=)) contents)
         meta-comments (meta (get-comments contents))]
-    (if (empty? data-lines) {}
+    (if (empty? data-lines) (with-meta {} meta-comments)
         (loop [lines data-lines acc {}]
-          (if lines (with-meta acc meta-comments)
+          (if-not lines (with-meta acc meta-comments)
               (let [[x & more] lines
                     [key val] (re-split #" = " x 2)]
                 (recur more (assoc acc (read-string key) (read-string val)))))))))
