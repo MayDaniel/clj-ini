@@ -1,6 +1,6 @@
 # Clj-Ini
 
-Another small, superficial read/write key/val configuration utility.
+Another small read/write key/val configuration utility.
 
 ## Usage
 
